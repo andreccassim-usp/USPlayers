@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,29 +10,34 @@
     <title>
         {% block title %}{% endblock %} | USPlayers
     </title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
 </head>
 
 <body>
     <header id="cabecalho-principal">
-        <nav id="navegacao-principal">
+        <article class="logo">
+            <a href="{% url 'index' %}"> <img src="{% static 'logo.png' %}" alt="Logo USPlayers" height="100"> </a>
+        </article>
+            <nav id="navegacao-principal">
             <ul>
                 <li><a href="{% url 'index' %}">Página Inicial</a></li>
-            </ul>
-            <ul>
                 <li><a href="{% url 'about' %}">Sobre</a></li>
             </ul>
         </nav>
-
     </header>
+
     <main id="conteiner-principal">
         {% block content %}
         {% endblock content %}
     </main>
+
     <footer id="rodape-principal">
         <p>
             <small>Copyright 2025 - USPlayers</small>
         </p>
     </footer>
+
 </body>
 
 </html>
