@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil do atleta {{ atleta.nome }}</title>
+</head>
+<body>
+    <h1>Perfil do atleta {{ atleta.nome }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
+    </form>
+
+    <p><a href="{% url 'buscar' %}">Voltar para busca</a></p>
+</body>
+</html>
