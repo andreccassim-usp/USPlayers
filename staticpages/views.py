@@ -66,7 +66,13 @@ def about(request):
     context = {}
     return render(request, 'staticpages/about.html', context)
 
+def comparacao(request):
+    context = {}
+    return render(request, 'comparacao.html', context)
 
+def login(request):
+    context = {}
+    return render(request, 'login.html', context)
 
 
 # PÁGINA DE BUSCA
