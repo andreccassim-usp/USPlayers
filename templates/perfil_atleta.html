@@ -7,12 +7,14 @@
 <body>
     <h1>Perfil do atleta {{ atleta.nome }}</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Salvar</button>
-    </form>
+    <p><strong>Ano de entrada:</strong> {{ atleta.ano_entrada }}</p>
+    <p><strong>Atlética:</strong> {{ atleta.atletica }}</p>
+    <p><strong>Modalidade:</strong> {{ atleta.modalidade }}</p>
+    <p><strong>Desempenho:</strong> {{ atleta.desempenho|linebreaks }}</p>
 
-    <p><a href="{% url 'buscar' %}">Voltar para busca</a></p>
+    {# Gancho para login futuro #}
+    {% if user.is_authenticated and user == atleta.usuario %}
+        <p><a href="{% url 'editar_atleta' atleta.pk %}">Editar perfil</a></p>
+    {% endif %}
 </body>
 </html>

@@ -2,17 +2,18 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil da atlética {{ atletica.nome }}</title>
+    <title>Atlética {{ atletica.nome }}</title>
 </head>
 <body>
-    <h1>Perfil da atlética {{ atletica.nome }}</h1>
+    <h1>{{ atletica.nome }}</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Salvar</button>
-    </form>
+    <p><strong>Curso:</strong> {{ atletica.curso }}</p>
+    <p><strong>Universidade:</strong> {{ atletica.universidade }}</p>
+    <p><strong>Ano de fundação:</strong> {{ atletica.ano_fundacao }}</p>
+    <p><strong>Descrição:</strong> {{ atletica.descricao|linebreaks }}</p>
 
-    <p><a href="{% url 'buscar' %}">Voltar para busca</a></p>
+    {% if user.is_authenticated and user == atletica.dono %}
+        <p><a href="{% url 'editar_atletica' atletica.pk %}">Editar atlética</a></p>
+    {% endif %}
 </body>
 </html>
