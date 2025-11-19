@@ -97,7 +97,7 @@ def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            login(request, form.get_user())
+            form.save()
             return HttpResponseRedirect(reverse('index'))
     else:
         form = SignupForm()
@@ -105,13 +105,3 @@ def signup(request):
     context = {'form': form}
     return render(request, 'signup.html', context)
 
-def login(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request.POST)
-        if form.is_valid():
-            login(request, form.get_user())
-            return HttpResponseRedirect(reverse('index'))
-    else:
-        form = AuthenticationForm()
-    context = {'form': form}
-    return render(request, 'login.html', context)
