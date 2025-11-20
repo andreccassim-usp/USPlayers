@@ -2,8 +2,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseForbidden
 from .models import Atleta, Atletica
-from .forms import AtletaForm, AtleticaForm
-
+from .forms import AtletaForm, AtleticaForm, SignupForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.contrib.auth import login
 
 # --------- PERFIS (qualquer um pode ver) ----------
 
@@ -70,9 +73,6 @@ def comparacao(request):
     context = {}
     return render(request, 'comparacao.html', context)
 
-def login(request):
-    context = {}
-    return render(request, 'login.html', context)
 
 
 # PÁGINA DE BUSCA
@@ -92,3 +92,16 @@ def buscar(request):
         'atleticas': atleticas,
     }
     return render(request, 'buscar.html', context)
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('index'))
+    else:
+        form = SignupForm()
+
+    context = {'form': form}
+    return render(request, 'signup.html', context)
+
