@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil do atleta {{ atleta.nome }}</title>
+</head>
+<body>
+    <a href="{% url 'buscar' %}">Voltar</a>
+    <h1>Perfil do atleta {{ atleta.nome }}</h1>
+
+    <p><strong>Ano de entrada:</strong> {{ atleta.ano_entrada }}</p>
+    <p><strong>Atlética:</strong> {{ atleta.atletica }}</p>
+    <p><strong>Modalidade:</strong> {{ atleta.modalidade }}</p>
+    <p><strong>Desempenho:</strong> {{ atleta.desempenho|linebreaks }}</p>
+
+    {# Gancho para login futuro #}
+    {% if user.is_authenticated and user == atleta.usuario %}
+        <p><a href="{% url 'editar_atleta' atleta.pk %}">Editar perfil</a></p>
+    {% endif %}
+</body>
+
+{% endblock %}
