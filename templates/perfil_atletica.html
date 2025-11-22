@@ -1,12 +1,10 @@
-{% extends 'base.html' %}
-
-{% block content %}
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Atlética {{ atletica.nome }}</title>
 </head>
 <body>
-    <a href="{% url 'buscar' %}">Voltar</a>
     <h1>{{ atletica.nome }}</h1>
 
     <p><strong>Curso:</strong> {{ atletica.curso }}</p>
@@ -18,4 +16,4 @@
         <p><a href="{% url 'editar_atletica' atletica.pk %}">Editar atlética</a></p>
     {% endif %}
 </body>
-{% endblock %}
+</html>
