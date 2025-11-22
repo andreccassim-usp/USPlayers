@@ -19,11 +19,14 @@
         <article class="logo">
             <a href="{% url 'index' %}"> <img src="{% static 'logo.png' %}" alt="Logo USPlayers" height="100"> </a>
         </article>
-            <nav id="navegacao-principal">
+        <nav id="navegacao-principal">
             <ul>
                 <li><a href="{% url 'index' %}">Página Inicial</a></li>
                 <li><a href="{% url 'about' %}">Sobre</a></li>
                 <li><a href="{% url 'buscar' %}">Buscar</a></li>
+                <li><a href="{% url 'comparacao' %}">Comparação</a></li>
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'signup' %}">Cadastre-se</a></li>
             </ul>
         </nav>
     </header>
