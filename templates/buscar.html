@@ -16,10 +16,10 @@
     {% for atleta in atletas %}
         <li>
             {{ atleta.nome }} – {{ atleta.esporte }}
-            <a href="/atleta/{{ atleta.id }}/">ver perfil</a>
+            <a href="/atleta/{{ atleta.id }}/">Ver perfil</a>
         </li>
     {% empty %}
-        <li>Nenhum atleta encontrado.</li>
+        <li>Nenhum atleta com esse nome foi encontrado.</li>
     {% endfor %}
 </ul>
 
@@ -28,10 +28,10 @@
     {% for atl in atleticas %}
         <li>
             {{ atl.nome }}
-            <a href="/atletica/{{ atl.id }}/">ver perfil</a>
+            <a href="/atletica/{{ atl.id }}/">Ver perfil</a>
         </li>
     {% empty %}
-        <li>Nenhuma atlética encontrada.</li>
+        <li>Nenhuma atlética com esse nome foi encontrada.</li>
     {% endfor %}
 </ul>
 
