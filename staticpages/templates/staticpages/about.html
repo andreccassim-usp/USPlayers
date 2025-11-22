@@ -1,9 +1,41 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}
 Sobre
 {% endblock title %}
 
 {% block content %}
 <h2>Sobre este site</h2>
+<section class="sobre">
+    <article class="texto-sobre">
+        <p> O USPlayers surgiu com o objetivo de ser um site informativo sobre o esporte universitário e armazenar a história dessa prática, com grandes impactos na vivência universitária.
+            O foco aqui é o esporte praticado na USP, universidade dos fundadores do USPlayers e na qual os esportes são parte fundamental da vida no campus. <br> 
+            <br>
+            A importância do esporte na USP, vai além da saúde e da disputa entre atletas e atléticas, envolvendo também o sentimento de pertencimento, acolhimento e suporte, sendo ponto crucial 
+            para a qualidade de vida dos estudantes. <br>
+            <br>
+            Dessa forma, o USPlayers visa fortalecer o reconhecimento do esporte universitário, armazenar os feitos de atléticas e atletas e servir como ferramenta de pesquisa para que os 
+            time possam se preparar melhor para os confrontos e, assim, aumentar o nível competitivo dos torneios disputados.
+            <br>
+            Para isso, aqui no USPlayers você pode encontrar as informações de cada atlética e atleta da USP, conquistas históricas das atléticas e marcas individuais dos atletas.
+            Além disso, também é possível comparar os times de duas atléticas em uma modalidade, para ver qual deles possui melhor desempenho recente, qual deles possui maior chance de vencer esse
+            confronto e quais são os destaques de cada equipe. <br>
+            <br>
+            Se você deseja fazer parte dessa história basta criar seu perfil, inserir suas informações e atualizar frequentemente suas estatísticas. Dessa forma, sua história no esporte universitário
+            ficará escrita para sempre aqui no USPlayers, para ser admirada por muitos e servir como exemplo e motivação para futuros atletas da USP.
+        </p> 
+        <article class="imagens-texto-sobre">
+            <a href="{% url 'index' %}"> <img src="{% static 'cepe.jpg' %}" alt="Centro de práticas esportivas da USP" height="200"> </a>
+            <a href="{% url 'index' %}"> <img src="{% static 'futcampo.png' %}" alt="Time universitário de futebol de campo" height="200"> </a>
+        </article>
+    </article>
+    <article class="imagens-sobre">
+        <a href="{% url 'index' %}"> <img src="{% static 'futsal.png' %}" alt="Time universitário de futsal" width="300"> </a>
+        <a href="{% url 'index' %}"> <img src="{% static 'soft.png' %}" alt="Time universitário de softbol" width="300"> </a>
+        <a href="{% url 'index' %}"> <img src="{% static 'natacao.jpeg' %}" alt="Time universitário de natação" width="300"> </a>
+    </article>
+</section>
+
 {% endblock content %}
