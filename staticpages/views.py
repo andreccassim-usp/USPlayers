@@ -4,7 +4,7 @@ from django.http import HttpResponseForbidden
 from .models import Atleta, Atletica, ResultadoPartida
 from .forms import AtletaForm, AtleticaForm, SignupForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth import login
 from django.db.models import Q 
@@ -13,7 +13,8 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core import serializers
-
+from django.contrib.auth.models import Group
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 # --------- PERFIS (qualquer um pode ver) ----------
 def index(request):
@@ -103,20 +104,39 @@ def buscar_api(request):
 
     return JsonResponse({'atletas': atletas, 'atleticas': atleticas})
 
+
+@ensure_csrf_cookie
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
+
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('index'))
+            user = form.save()
+
+            group_name = form.cleaned_data['groups']  # string
+
+            # busca o objeto Group
+            try:
+                group = Group.objects.get(name=group_name)
+            except Group.DoesNotExist:
+                form.add_error('groups', "Grupo não encontrado.")
+                return render(request, 'signup.html', {'form': form})
+
+            # adiciona o grupo ao usuário
+            user.groups.add(group)
+
+            # login automático
+            login(request, user)
+
+            # redirecionamento
+            if group_name == "Atléticas":
+                return redirect("criar_atletica")
+            else:
+                return redirect("criar_atleta")
     else:
         form = SignupForm()
 
-    context = {'form': form}
-    return render(request, 'signup.html', context)
-
-
-
+    return render(request, 'signup.html', {'form': form})
 def comparacao(request):
 
     MODALIDADES = [
@@ -190,3 +210,31 @@ def comparacao(request):
     return render(request, 'comparacao.html', context)
 
 
+
+@login_required
+def criar_atleta(request):
+    if request.method == "POST":
+        form = AtletaForm(request.POST)
+        if form.is_valid():
+            atleta = form.save(commit=False)
+            atleta.usuario = request.user  # vincula o dono
+            atleta.save()
+            return redirect("perfil_atleta", pk=atleta.pk)
+    else:
+        form = AtletaForm()
+
+    return render(request, "criar_atleta.html", {"form": form})
+
+@login_required
+def criar_atletica(request):
+    if request.method == "POST":
+        form = AtleticaForm(request.POST)
+        if form.is_valid():
+            atletica = form.save(commit=False)
+            atletica.dono = request.user
+            atletica.save()
+            return redirect("perfil_atletica", pk=atletica.pk)
+    else:
+        form = AtleticaForm()
+
+    return render(request, "criar_atletica.html", {"form": form})

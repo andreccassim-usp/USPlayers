@@ -39,4 +39,7 @@ urlpatterns = [
     path('accounts/', include("django.contrib.auth.urls")),
 
     path("buscar_api/", views.buscar_api, name="buscar_api"),
+    path('criar-atleta/', views.criar_atleta, name='criar_atleta'),
+    path('criar-atletica/', views.criar_atletica, name='criar_atletica'),
 ]
+

@@ -9,6 +9,7 @@ urlpatterns = [
     path('comparacao/', views.comparacao, name='comparacao'),
     path('atleta/<int:pk>/', views.perfil_atleta, name='perfil_atleta'),
     path('atletica/<int:pk>/', views.perfil_atletica, name='perfil_atletica'),
-    path('signup/', views.signup, name='signup')
-    
+    path('signup/', views.signup, name='signup'),
+    path('criar-atleta/', views.criar_atleta, name='criar_atleta'),
+    path('criar-atletica/', views.criar_atletica, name='criar_atletica'),
 ]

@@ -20,6 +20,17 @@
     <p> Se você ainda não possui uma conta no USPlayers basta se cadastrar aqui, para poder acessar todas as funções do site. </p>
     <form method="post">
         {% csrf_token %}
+        {% if form.errors %}
+    <div class="error-messages">
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li><strong>{{ field }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
         <label for="{{ form.username.id_for_label }}">Nome de usuário: </label>
         {{ form.username }}
         <br>

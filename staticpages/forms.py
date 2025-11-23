@@ -20,7 +20,21 @@ class SignupForm(UserCreationForm):
     email = forms.EmailField(max_length=64)
     password1 = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
-    groups = forms.ModelMultipleChoiceField(queryset=Group.objects.all())
+    groups = forms.ChoiceField(
+    choices=[
+        ("Atleta", "Atleta"),
+        ("Atléticas", "Atlética"),
+    ]
+)
+
     class Meta:
         model = User
-        fields = ['username','groups','email','password1','password2']
+        fields = ['username', 'email', 'password1', 'password2', 'groups']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"]
+
+        if commit:
+            user.save()
+        return user

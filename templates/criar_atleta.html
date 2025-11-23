@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Criar Atleta
+{% endblock title %}
+
+{% block content %}
+
+<h2>Criar página de Atleta</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Salvar</button>
+</form>
+{% endblock content %}
