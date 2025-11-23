@@ -1,38 +1,14 @@
-{% extends "base.html" %}
-{% block title %}Buscar{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>Buscar Atletas e Atléticas</h1>
 
-<form method="get">
-    <input type="text" name="q" placeholder="Digite um nome..." value="{{ termo }}">
-    <button type="submit">Buscar</button>
-</form>
+<h2>Buscar Atletas e Atléticas</h2>
 
-<hr>
+<input type="text" id="campo-busca" placeholder="Digite um nome...">
 
-<h2>Atletas</h2>
-<ul>
-    {% for atleta in atletas %}
-        <li>
-            {{ atleta.nome }} – {{ atleta.esporte }}
-            <a href="/atleta/{{ atleta.id }}/">Ver perfil</a>
-        </li>
-    {% empty %}
-        <li>Nenhum atleta com esse nome foi encontrado.</li>
-    {% endfor %}
-</ul>
+<ul id="resultado"></ul>
 
-<h2>Atléticas</h2>
-<ul>
-    {% for atl in atleticas %}
-        <li>
-            {{ atl.nome }}
-            <a href="/atletica/{{ atl.id }}/">Ver perfil</a>
-        </li>
-    {% empty %}
-        <li>Nenhuma atlética com esse nome foi encontrada.</li>
-    {% endfor %}
-</ul>
+<script src="{% static 'js/busca.js' %}"></script>
 
 {% endblock %}

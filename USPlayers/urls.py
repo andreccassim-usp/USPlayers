@@ -16,17 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from staticpages import views  
+from staticpages import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Página inicial correta
     path('', views.index, name='index'),
+
     path('about/', views.about, name='about'),
     path('buscar/', views.buscar, name='buscar'),
     path('comparacao/', views.comparacao, name='comparacao'),
+
     path("atleta/<int:pk>/", views.perfil_atleta, name="perfil_atleta"),
     path("atleta/<int:pk>/editar/", views.editar_atleta, name="editar_atleta"),
     path("atletica/<int:pk>/", views.perfil_atletica, name="perfil_atletica"),
     path("atletica/<int:pk>/editar/", views.editar_atletica, name="editar_atletica"),
+
     path('signup/', views.signup, name='signup'),
-    path('', include("django.contrib.auth.urls")),
+
+    # Aqui estava o problema
+    path('accounts/', include("django.contrib.auth.urls")),
+
+    path("buscar_api/", views.buscar_api, name="buscar_api"),
 ]
