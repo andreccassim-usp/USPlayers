@@ -128,6 +128,17 @@ a:hover {
   width: 150px;
 }
 
+.botao-link-base {
+  display: inline-block;
+  font-size:small;
+  background-color: #0a0d3f;
+  border: 3px solid #d14606;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  width: 100px;
+}
+
 .textoinicial {
   text-align: center;
   display: flex;
