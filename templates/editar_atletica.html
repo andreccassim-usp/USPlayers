@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Editar Atlética: {{ atletica.nome }}</h2>
+
+<a href="{% url 'perfil_atletica' atletica.pk %}">← Voltar ao perfil</a>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <label for="{{ form.nome.id_for_label }}">Nome:</label>
+    {{ form.nome }}
+    <br><br>
+
+    <label for="{{ form.universidade.id_for_label }}">Universidade:</label>
+    {{ form.universidade }}
+    <br><br>
+
+    <label for="{{ form.ano_fundacao.id_for_label }}">Ano de Fundação:</label>
+    {{ form.ano_fundacao }}
+    <br><br>
+
+    <label for="{{ form.descricao.id_for_label }}">Descrição:</label>
+    {{ form.descricao }}
+    <br><br>
+
+    <button type="submit">Salvar Alterações</button>
+</form>
+
+{% endblock %}

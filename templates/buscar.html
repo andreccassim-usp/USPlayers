@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h2>Buscar Atletas e Atléticas</h2>
+
+<input type="text" id="campo-busca" placeholder="Digite um nome...">
+
+<ul id="resultado"></ul>
+
+<script src="{% static 'js/busca.js' %}"></script>
+
+{% endblock %}

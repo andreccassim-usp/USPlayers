@@ -1,0 +1,77 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Página Inicial | USPlayers
+    </title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <header id="cabecalho-pagina-principal">
+        <article class="logo">
+            <a href="{% url 'index' %}"> <img src="{% static 'logo.png' %}" alt="Logo USPlayers" height="100"> </a>
+        </article>
+        <article class="usuario">
+            <a href="{% url 'login' %}" class="botao-link">Login</a>
+            <a href="{% url 'signup' %}" class="botao-link">Cadastre-se</a>
+        </article>
+    </header>
+
+    <main id="conteiner-principal">
+        <article class="textoinicial">
+            <h1><i>USPlayers</i></h1>
+            <p>Bem-vindo ao USPlayers, o site para você se manter sempre informado sobre os esportes universitários.</p> 
+        </article>
+        <section class="funcionalidades-section">
+            <article class="funcionalidade-article">
+                <article class="texto-funcionalidade">
+                    <a href="{% url 'index' %}"> <img src="{% static 'logo.png' %}" alt="Logo USPlayers" height="150"> </a>
+                </article>
+                <article class="texto-funcionalidade">
+                    <p>Para conhecer melhor o intuito e a histótia do nosso site, assim como o contexto do esporte universitário na USP você pode acessar a página a seguir.</p>
+                    <a href="{% url 'about' %}" class="botao-link">Sobre</a>
+                </article>
+            </article>
+
+
+            <article class="funcionalidade-article">
+                <article class="texto-funcionalidade">
+                    <a href="{% url 'index' %}"> <img src="{% static 'lupa.png' %}" alt="Lupa de pesquisa" width="150"> </a>
+                </article>
+                <article class="texto-funcionalidade">
+                    <p>Para pesquisar uma atlética ou atleta específico e observar suas estatísticas e história você pode acessar nosso menu de busca.</p>
+                    <a href="{% url 'buscar' %}" class="botao-link">Buscar</a>
+                </article>
+            </article>
+
+
+            <article class="funcionalidade-article">
+                <article class="texto-funcionalidade">
+                    <a href="{% url 'index' %}"> <img src="{% static 'comparar.png' %}" alt="Símbolo de versus" width="150"> </a>
+                </article>
+                <article class="texto-funcionalidade">
+                    <p>Para comparar dois times de uma modalidade e saber qual teve resultados melhores recentemente e tem mais chance de vitória nesse confronto você pode acessar a página de comparações.</p>
+                    <a href="{% url 'comparacao' %}" class="botao-link">Comparação</a>
+                </article>
+            </article>
+
+        </section>
+    </main>
+
+    <footer id="rodape-principal">
+        <p>
+            <small>Copyright 2025 - USPlayers</small>
+        </p>
+    </footer>
+
+</body>
+
+</html>

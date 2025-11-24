@@ -1,0 +1,58 @@
+
+
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<!-- <section class="texto-cadastro">
+    <h2>Cadastro</h2>
+    <p> Se você ainda não possui uma conta no USPlayers basta se cadastrar aqui, para poder acessar todas as funções do site. </p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Criar</button>
+    </form>
+</section> -->
+
+<section class="texto-cadastro">
+    <h2>Cadastro</h2>
+    <p> Se você ainda não possui uma conta no USPlayers basta se cadastrar aqui, para poder acessar todas as funções do site. </p>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+    <div class="error-messages">
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li><strong>{{ field }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+        <label for="{{ form.username.id_for_label }}">Nome de usuário: </label>
+        {{ form.username }}
+        <br>
+        <br>
+        <label for="{{ form.email.id_for_label }}">E-mail: </label>
+        {{ form.email }}
+        <br>
+        <br>
+        <label for="{{ form.groups.id_for_label }}">Tipo de usuário: </label>
+        {{ form.groups }}
+        <br>
+        <br>
+        <label for="{{ form.password1.id_for_label }}">Senha: </label>
+        {{ form.password1 }}
+        <br>
+        <br>
+        <label for="{{ form.password2.id_for_label }}">Confirme sua senha: </label>
+        {{ form.password2 }}
+        <br>
+        <br>
+        <button type="submit">Criar</button>
+    </form>
+</section>
+
+{% endblock content %} 

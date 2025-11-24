@@ -1,0 +1,50 @@
+{% extends '../base.html' %}
+
+{% block title %}
+Login
+{% endblock title %}
+
+{% block content %}
+
+<!--<section class="texto-login">
+    <h1>Login de Usuário</h1>
+
+    {% if form.errors %}
+    <p>Usuário ou senha incorreto. Tente novamente.</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form.as_p}}
+        <button type="submit" value="login">Entrar</button>
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+
+    <p>Não possui uma conta ainda? <a href="{% url 'signup' %}">Cadastre-se aqui!</a></p>
+</section> -->
+
+<section class="texto-login">
+    <h1>Login de Usuário</h1>
+
+    {% if form.errors %}
+    <p>Usuário ou senha incorreto. Tente novamente.</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <label for="{{ form.username.id_for_label }}">Nome de usuário:</label>
+        {{ form.username }}
+        <br>
+        <br>
+        <label for="{{ form.password.id_for_label }}">Senha:</label>
+        {{ form.password }}
+        <br>
+        <br>
+        <button type="submit" value="login">Entrar</button>
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+
+    <p>Não possui uma conta ainda? <a href="{% url 'signup' %}">Cadastre-se aqui!</a></p>
+</section>
+
+{% endblock %}
