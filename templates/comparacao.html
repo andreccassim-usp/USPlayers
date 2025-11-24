@@ -2,68 +2,71 @@
 
 {% block content %}
     
-    <h2>🏆 Comparação de Desempenho entre Atléticas</h2>
+    <h2>🏆 Comparação de Desempenho entre Times</h2>
+    <section class="texto-comparacao">
+        <p> Para comparar dois times de uma modalidade e ver quais foram os resultados dos últimos jogos entre eles basta selecionar abaixo o esporte desejado e as atléticas representadas por esses times. </p>
 
-    <form method="GET" action="{% url 'comparacao' %}">
-        
-        {% comment %} 
-            Não é necessário {% csrf_token %} para requisições GET, 
-            apenas para POST, PUT, DELETE, etc. 
-        {% endcomment %}
-
-        <div class="comparacao-container">
-            <p>
-                <label for="id_modalidade">Modalidade:</label>
-                <select name="modalidade" id="id_modalidade" required>
-                    <option value="">Selecione a Modalidade</option>
-                    {% for modalidade in modalidades_disponiveis %}
-                        <option value="{{ modalidade }}" 
-                                {% if modalidade == modalidade_selecionada %}selected{% endif %}>
-                            {{ modalidade }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </p>
+        <form method="GET" action="{% url 'comparacao' %}">
             
-            <p>
-                <label for="id_atletica_1">Atlética 1:</label>
-                <select name="atletica_1" id="id_atletica_1" required>
-                    <option value="">Selecione a primeira atlética</option>
-                    {% for atletica in atleticas_disponiveis %}
-                        <option value="{{ atletica.id }}">{{ atletica.nome }} ({{ atletica.universidade }})</option>
-                    {% endfor %}
-                </select>
-            </p>
+            {% comment %} 
+                Não é necessário {% csrf_token %} para requisições GET, 
+                apenas para POST, PUT, DELETE, etc. 
+            {% endcomment %}
 
-            <p>
-                <label for="id_atletica_2">Atlética 2:</label>
-                <select name="atletica_2" id="id_atletica_2" required>
-                    <option value="">Selecione a segunda atlética</option>
-                    {% for atletica in atleticas_disponiveis %}
-                        <option value="{{ atletica.id }}">{{ atletica.nome }} ({{ atletica.universidade }})</option>
-                    {% endfor %}
-                </select>
-            </p>
+            <div class="comparacao-container">
+                <p>
+                    <label for="id_modalidade">Modalidade:</label>
+                    <select name="modalidade" id="id_modalidade" required>
+                        <option value="">Selecione a Modalidade</option>
+                        {% for modalidade in modalidades_disponiveis %}
+                            <option value="{{ modalidade }}" 
+                                    {% if modalidade == modalidade_selecionada %}selected{% endif %}>
+                                {{ modalidade }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </p>
+                
+                <p>
+                    <label for="id_atletica_1">Atlética 1:</label>
+                    <select name="atletica_1" id="id_atletica_1" required>
+                        <option value="">Selecione a primeira atlética</option>
+                        {% for atletica in atleticas_disponiveis %}
+                            <option value="{{ atletica.id }}">{{ atletica.nome }} ({{ atletica.universidade }})</option>
+                        {% endfor %}
+                    </select>
+                </p>
 
-            <button type="submit">Fazer Comparação</button>
-        </div>
+                <p>
+                    <label for="id_atletica_2">Atlética 2:</label>
+                    <select name="atletica_2" id="id_atletica_2" required>
+                        <option value="">Selecione a segunda atlética</option>
+                        {% for atletica in atleticas_disponiveis %}
+                            <option value="{{ atletica.id }}">{{ atletica.nome }} ({{ atletica.universidade }})</option>
+                        {% endfor %}
+                    </select>
+                </p>
 
-        {% if resultado_comparacao %}
-            <hr>
-            <h3>Resultados nos Últimos Dois Anos</h3>
-            <p>
-                A <strong>{{ resultado_comparacao.vencedora }}</strong> venceu 
-                **{{ resultado_comparacao.vitorias_vencedora }}** confrontos, 
-                enquanto a <strong>{{ resultado_comparacao.perdedora }}</strong> venceu 
-                **{{ resultado_comparacao.vitorias_perdedora }}** confrontos.
-            </p>
-            <h4>
-                Portanto, a **{{ resultado_comparacao.vencedora }}** tem **Maior Probabilidade de Vitória**!
-            </h4>
-        {% elif mensagem_erro %}
-             <hr>
-             <p style="color: red;">{{ mensagem_erro }}</p>
-        {% endif %}
+                <button type="submit">Fazer Comparação</button>
+            </div>
 
-    </form>
+            {% if resultado_comparacao %}
+                <hr>
+                <h3>Resultados nos Últimos Dois Anos</h3>
+                <p>
+                    A <strong>{{ resultado_comparacao.vencedora }}</strong> venceu 
+                    **{{ resultado_comparacao.vitorias_vencedora }}** confrontos, 
+                    enquanto a <strong>{{ resultado_comparacao.perdedora }}</strong> venceu 
+                    **{{ resultado_comparacao.vitorias_perdedora }}** confrontos.
+                </p>
+                <h4>
+                    Portanto, a **{{ resultado_comparacao.vencedora }}** tem **Maior Probabilidade de Vitória**!
+                </h4>
+            {% elif mensagem_erro %}
+                <hr>
+                <p style="color: red;">{{ mensagem_erro }}</p>
+            {% endif %}
+
+        </form>
+    </section>
 {% endblock content %}
