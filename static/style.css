@@ -167,14 +167,15 @@ a:hover {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 10px;
+  padding: 5px;
 }
 
 .imagens-sobre {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 30px;
+  padding: 20px;
+  border-radius: 5px;
 }
 
 .imagens-texto-sobre {
@@ -184,6 +185,16 @@ a:hover {
   margin-left: 30px;
   margin-right: 30px;
   padding: 10px;
+}
+
+.imagens-sobre img {
+  border-radius: 8px;
+  border: 3px solid #d14606;
+}
+
+.imagens-texto-sobre img {
+  border-radius: 8px;
+  border: 3px solid #d14606;
 }
 
 .texto-login {
