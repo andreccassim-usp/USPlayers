@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <h2>🏆 Comparação de Desempenho entre Atléticas</h2>
+
+    <form method="GET" action="{% url 'comparacao' %}">
+        
+        {% comment %} 
+            Não é necessário {% csrf_token %} para requisições GET, 
+            apenas para POST, PUT, DELETE, etc. 
+        {% endcomment %}
+
+        <div class="comparacao-container">
+            <p>
+                <label for="id_modalidade">Modalidade:</label>
+                <select name="modalidade" id="id_modalidade" required>
+                    <option value="">Selecione a Modalidade</option>
+                    {% for modalidade in modalidades_disponiveis %}
+                        <option value="{{ modalidade }}" 
+                                {% if modalidade == modalidade_selecionada %}selected{% endif %}>
+                            {{ modalidade }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </p>
+            
+            <p>
+                <label for="id_atletica_1">Atlética 1:</label>
+                <select name="atletica_1" id="id_atletica_1" required>
+                    <option value="">Selecione a primeira atlética</option>
+                    {% for atletica in atleticas_disponiveis %}
+                        <option value="{{ atletica.id }}">{{ atletica.nome }} ({{ atletica.universidade }})</option>
+                    {% endfor %}
+                </select>
+            </p>
+
+            <p>
+                <label for="id_atletica_2">Atlética 2:</label>
+                <select name="atletica_2" id="id_atletica_2" required>
+                    <option value="">Selecione a segunda atlética</option>
+                    {% for atletica in atleticas_disponiveis %}
+                        <option value="{{ atletica.id }}">{{ atletica.nome }} ({{ atletica.universidade }})</option>
+                    {% endfor %}
+                </select>
+            </p>
+
+            <button type="submit">Fazer Comparação</button>
+        </div>
+
+        {% if resultado_comparacao %}
+            <hr>
+            <h3>Resultados nos Últimos Dois Anos</h3>
+            <p>
+                A <strong>{{ resultado_comparacao.vencedora }}</strong> venceu 
+                **{{ resultado_comparacao.vitorias_vencedora }}** confrontos, 
+                enquanto a <strong>{{ resultado_comparacao.perdedora }}</strong> venceu 
+                **{{ resultado_comparacao.vitorias_perdedora }}** confrontos.
+            </p>
+            <h4>
+                Portanto, a **{{ resultado_comparacao.vencedora }}** tem **Maior Probabilidade de Vitória**!
+            </h4>
+        {% elif mensagem_erro %}
+             <hr>
+             <p style="color: red;">{{ mensagem_erro }}</p>
+        {% endif %}
+
+    </form>
+{% endblock content %}
