@@ -226,3 +226,10 @@ a:hover {
   justify-content: center;
   align-items: center;
 }
+
+.texto-buscar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

@@ -5,10 +5,16 @@
 
 <h2>Buscar Atletas e Atléticas</h2>
 
-<input type="text" id="campo-busca" placeholder="Digite um nome...">
+<section class="texto-buscar">
 
-<ul id="resultado"></ul>
+    <p>Para encontrar o perfil de um atleta ou de uma atlética digite no campo abaixo o nome desejado ou a sigla da atlética.</p>
 
-<script src="{% static 'js/busca.js' %}"></script>
+    <input type="text" id="campo-busca" placeholder="Digite um nome ou sigla...">
+
+    <ul id="resultado"></ul>
+
+    <script src="{% static 'js/busca.js' %}"></script>
+
+</section>
 
 {% endblock %}
