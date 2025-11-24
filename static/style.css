@@ -233,3 +233,11 @@ a:hover {
   justify-content: center;
   align-items: center;
 }
+
+.texto-comparacao {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
