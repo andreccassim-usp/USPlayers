@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseForbidden
 from .models import Atleta, Atletica, ResultadoPartida
-from .forms import AtletaForm, AtleticaForm, SignupForm
+from .forms import AtletaForm, AtleticaForm, SignupForm, ResultadoPartidaForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
@@ -10,7 +10,7 @@ from django.contrib.auth import login
 from django.db.models import Q 
 from datetime import timedelta
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
 from django.core import serializers
 from django.contrib.auth.models import Group
@@ -238,3 +238,89 @@ def criar_atletica(request):
         form = AtleticaForm()
 
     return render(request, "criar_atletica.html", {"form": form})
+
+#@login_required
+#def registrar_partida(request, pk):
+#    dono_atletica = get_object_or_404(Atletica, pk=pk)
+ #   if request.user != dono_atletica.dono:
+  #      return HttpResponseForbidden("Você não tem permissão para adicionar resultados para esta atlética.")
+   # if request.method == 'POST':
+    #    form = ResultadoPartidaForm(request.POST, dono_atletica=dono_atletica)
+     #   if form.is_valid():
+      #      resultado = form.save(commit=False)
+       #     resultado.registrado_por = request.user
+        #    resultado.atletica_1 = dono_atletica
+         #   if resultado.atletica_1.pk == resultado.atletica_2.pk:
+          #      form.add_error(None, "Atlética Adversária não pode ser a própria atlética.")
+           #     return render(request, 'registrar_partida.html', {'form': form, 'atletica': dono_atletica})
+#            #resultado.save()
+ #           return redirect('perfil_atletica', pk=dono_atletica.pk)
+  #  else:
+   #     form = ResultadoPartidaForm(dono_atletica=dono_atletica)
+ #   return render(request, 'registrar_partida.html', {'form': form, 'atletica': dono_atletica})
+ # Seu views.py, substituindo o bloco registrar_partida
+# views.py
+
+# Adicione esta importação no topo:
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin 
+from django.urls import reverse_lazy # Para usar a URL de redirecionamento no sucesso
+
+# ... (outras views)
+
+class RegistrarPartidaView(LoginRequiredMixin, CreateView):
+    # Modelo a ser usado
+    model = ResultadoPartida
+    
+    # Formulário customizado
+    form_class = ResultadoPartidaForm 
+    
+    # Template para renderizar o formulário
+    template_name = 'criar_resultado.html' 
+    
+    # URL de redirecionamento após sucesso (usaremos o método get_success_url)
+    success_url = reverse_lazy('index') 
+
+    # Sobrescreve para injetar a atlética do dono no formulário (para filtros)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        pk = self.kwargs.get('pk')
+        dono_atletica = get_object_or_404(Atletica, pk=pk)
+        kwargs['dono_atletica'] = dono_atletica
+        kwargs['atletica'] = dono_atletica # Passa a atlética para o contexto do template
+        return kwargs
+    
+    # Sobrescreve para passar a atlética para o contexto de renderização
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get('pk')
+        context['atletica'] = get_object_or_404(Atletica, pk=pk)
+        return context
+
+    # 🚨 LÓGICA DE AUTOMAÇÃO E SEGURANÇA (POST)
+    def form_valid(self, form):
+        pk = self.kwargs.get('pk')
+        dono_atletica = get_object_or_404(Atletica, pk=pk)
+
+        # 1. AUTORIZAÇÃO: Verifica se o usuário logado é o dono
+        if self.request.user != dono_atletica.dono:
+            # Não é a maneira mais limpa de bloquear, mas garante segurança
+            return HttpResponseForbidden("Você não tem permissão para registrar resultados para esta atlética.")
+
+        # 2. ATRIBUIÇÃO AUTOMÁTICA
+        resultado = form.save(commit=False)
+        resultado.registrado_por = self.request.user
+        resultado.atletica_1 = dono_atletica
+        
+        # 3. VALIDAÇÃO EXTRA (se a lógica de forms não pegar)
+        if resultado.atletica_1.pk == resultado.atletica_2.pk:
+             form.add_error(None, "Atlética Adversária não pode ser a própria atlética.")
+             return self.form_invalid(form) # Retorna erro
+        
+        resultado.save()
+        return super().form_valid(form)
+
+    # 4. Define o redirecionamento para o perfil da atlética recém-editada
+    def get_success_url(self):
+        pk = self.kwargs.get('pk')
+        return reverse('perfil_atletica', kwargs={'pk': pk})
