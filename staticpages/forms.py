@@ -3,6 +3,7 @@ from .models import Atleta, Atletica, ResultadoPartida
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 from django.forms import ModelForm
+from datetime import date 
 
 
 class AtletaForm(forms.ModelForm):
@@ -40,39 +41,62 @@ class SignupForm(UserCreationForm):
             user.save()
         return user
  
-class ResultadoPartidaForm(ModelForm):
+class ResultadoPartidaForm(forms.ModelForm):
+    MODALIDADES_CHOICES = [
+        ("Futsal Masculino", "Futsal Masculino"),
+        ("Futsal Feminino", "Futsal Feminino"),
+        ("Voleibol Masculino", "Voleibol Masculino"),
+        ("Voleibol Feminino", "Voleibol Feminino"),
+        ("Softbol", "Softbol"),
+    ]
+    
+    modalidade = forms.ChoiceField(choices=MODALIDADES_CHOICES)
     class Meta:
         model = ResultadoPartida
-        # Inclui todos os campos, exceto os que serão preenchidos automaticamente/escondidos:
-        # registrado_por e atletica_1 serão removidos/tratados na view, mas devem ser incluídos para validação
-        fields = ['atletica_1', 'atletica_2', 'atletica_vencedora', 'data_partida', 'modalidade', 'registrado_por']
-        
+        fields = ['atletica_2', 'atletica_vencedora', 'data_partida', 'modalidade']
+
+
+    class Meta:
+        model = ResultadoPartida
+        fields = [
+            'atletica_1',
+            'atletica_2',
+            'atletica_vencedora',
+            'data_partida',
+            'modalidade',
+            'registrado_por'
+        ]
+
         labels = {
             'atletica_2': 'Atlética Adversária',
             'atletica_vencedora': 'Vencedora da Partida',
             'data_partida': 'Data da Partida (AAAA-MM-DD)',
         }
-        
+
     def __init__(self, *args, **kwargs):
-        # Chama a inicialização padrão do formulário
+        dono_atletica = kwargs.pop('dono_atletica', None)
         super().__init__(*args, **kwargs)
         
-        # Oculta campos que serão preenchidos automaticamente na view (por segurança e UX)
-        # Removendo estes campos do fields original (Meta) permite que eles sejam tratados separadamente
+        #campos que serão preenchidos automaticamente
         del self.fields['atletica_1']
         del self.fields['registrado_por']
         
-        # Configurações para campos de seleção (Dropdowns)
-        # Garante que Atletica 2 e Vencedora não podem ser a atlética do dono (a ser passada na view)
-        
-        # Filtra opções para Atletica Adversária: 
-        # Exclui a atlética do dono da lista de opções (se a atlética do dono for passada no kwargs)
+
+        #exclui a atlética do dono da lista de opções
         if 'dono_atletica' in kwargs:
              dono_atletica = kwargs.pop('dono_atletica')
              self.fields['atletica_2'].queryset = Atletica.objects.exclude(pk=dono_atletica.pk)
              self.fields['atletica_vencedora'].queryset = Atletica.objects.all()
-
-        # O campo 'modalidade' já é um CharField, o Django irá renderizá-lo como campo de texto.
-        # Se preferir um dropdown com opções fixas, use widgets:
-        # MODALIDADES = [("Futsal Masculino", "Futsal Masculino"), ...]
-        # self.fields['modalidade'] = forms.ChoiceField(choices=MODALIDADES)
+    def clean_data_partida(self):
+        # 1. Obtém o valor do campo data_partida
+        data = self.cleaned_data.get('data_partida')
+        
+        # 2. Obtém a data atual (sem componente de tempo)
+        hoje = date.today() 
+        
+        # 3. Validação: Checa se a data fornecida é futura
+        if data and data > hoje:
+            # Levanta uma exceção de validação que anexa o erro ao campo
+            raise forms.ValidationError("Data da partida inválida: não é possível registrar resultados para o futuro.")
+            
+        return data

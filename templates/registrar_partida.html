@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Adicionar Resultado | {{ atletica.nome }}
+{% endblock title %}
+
+{% block content %}
+    <h2>Adicionar Novo Resultado para {{ atletica.nome }}</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        {# Renderiza o formulário com campos Atlética 2, Vencedora, Data e Modalidade #}
+        {{ form.as_p }}
+        
+        <button type="submit">Salvar Resultado</button>
+    </form>
+
+    <p><a href="{% url 'perfil_atletica' atletica.pk %}">Cancelar e Voltar para o Perfil</a></p>
+{% endblock content %}
