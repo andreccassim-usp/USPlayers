@@ -39,58 +39,40 @@ class SignupForm(UserCreationForm):
         if commit:
             user.save()
         return user
-    
-# Seu forms.py, substituindo o bloco ResultadoPartidaForm
-# forms.py
-
-# ... (outras classes)
-
-## forms.py
-
-from django import forms
-from django.forms import ModelForm
-# Certifique-se de que ResultadoPartida e Atletica estão importados no topo
-from .models import ResultadoPartida, Atletica 
-
+ 
 class ResultadoPartidaForm(ModelForm):
-    # 1. Definir as opções fixas para o campo Modalidade
-    MODALIDADES_CHOICES = [
-        ("Futsal Masculino", "Futsal Masculino"),
-        ("Futsal Feminino", "Futsal Feminino"),
-        ("Voleibol Masculino", "Voleibol Masculino"),
-        ("Voleibol Feminino", "Voleibol Feminino"),
-        ("Softbol", "Softbol"),
-    ]
-    
-    # Sobrescrever o campo Modalidade para ser um Dropdown com Choices fixos
-    modalidade = forms.ChoiceField(choices=MODALIDADES_CHOICES)
-
     class Meta:
         model = ResultadoPartida
-        # Inclui todos os campos do modelo (mesmo os que serão removidos/preenchidos)
+        # Inclui todos os campos, exceto os que serão preenchidos automaticamente/escondidos:
+        # registrado_por e atletica_1 serão removidos/tratados na view, mas devem ser incluídos para validação
         fields = ['atletica_1', 'atletica_2', 'atletica_vencedora', 'data_partida', 'modalidade', 'registrado_por']
         
         labels = {
             'atletica_2': 'Atlética Adversária',
-            'atletica_vencedora': 'Atlética Vencedora',
+            'atletica_vencedora': 'Vencedora da Partida',
             'data_partida': 'Data da Partida (AAAA-MM-DD)',
         }
         
     def __init__(self, *args, **kwargs):
-        # 1. Retira a variável 'dono_atletica' dos kwargs para usá-la nos filtros internos
-        # Usamos 'None' como default para evitar um KeyError se o form for instanciado sem esse parâmetro
-        dono_atletica = kwargs.pop('dono_atletica', None)
-        
+        # Chama a inicialização padrão do formulário
         super().__init__(*args, **kwargs)
         
-        # 2. Oculta os campos que serão preenchidos automaticamente na View
-        # Isso impede o usuário de manipular o dono e a Atlética 1
-        if 'atletica_1' in self.fields:
-             del self.fields['atletica_1']
-        if 'registrado_por' in self.fields:
-             del self.fields['registrado_por']
+        # Oculta campos que serão preenchidos automaticamente na view (por segurança e UX)
+        # Removendo estes campos do fields original (Meta) permite que eles sejam tratados separadamente
+        del self.fields['atletica_1']
+        del self.fields['registrado_por']
         
-        # 3. Aplica o filtro de exclusão na Atlética Adversária (Atlética 2)
-        if dono_atletica:
-             # Garante que a Atlética 2 (Adversária) não pode ser a Atlética do dono
+        # Configurações para campos de seleção (Dropdowns)
+        # Garante que Atletica 2 e Vencedora não podem ser a atlética do dono (a ser passada na view)
+        
+        # Filtra opções para Atletica Adversária: 
+        # Exclui a atlética do dono da lista de opções (se a atlética do dono for passada no kwargs)
+        if 'dono_atletica' in kwargs:
+             dono_atletica = kwargs.pop('dono_atletica')
              self.fields['atletica_2'].queryset = Atletica.objects.exclude(pk=dono_atletica.pk)
+             self.fields['atletica_vencedora'].queryset = Atletica.objects.all()
+
+        # O campo 'modalidade' já é um CharField, o Django irá renderizá-lo como campo de texto.
+        # Se preferir um dropdown com opções fixas, use widgets:
+        # MODALIDADES = [("Futsal Masculino", "Futsal Masculino"), ...]
+        # self.fields['modalidade'] = forms.ChoiceField(choices=MODALIDADES)

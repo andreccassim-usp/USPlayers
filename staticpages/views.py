@@ -239,27 +239,6 @@ def criar_atletica(request):
 
     return render(request, "criar_atletica.html", {"form": form})
 
-#@login_required
-#def registrar_partida(request, pk):
-#    dono_atletica = get_object_or_404(Atletica, pk=pk)
- #   if request.user != dono_atletica.dono:
-  #      return HttpResponseForbidden("Você não tem permissão para adicionar resultados para esta atlética.")
-   # if request.method == 'POST':
-    #    form = ResultadoPartidaForm(request.POST, dono_atletica=dono_atletica)
-     #   if form.is_valid():
-      #      resultado = form.save(commit=False)
-       #     resultado.registrado_por = request.user
-        #    resultado.atletica_1 = dono_atletica
-         #   if resultado.atletica_1.pk == resultado.atletica_2.pk:
-          #      form.add_error(None, "Atlética Adversária não pode ser a própria atlética.")
-           #     return render(request, 'registrar_partida.html', {'form': form, 'atletica': dono_atletica})
-#            #resultado.save()
- #           return redirect('perfil_atletica', pk=dono_atletica.pk)
-  #  else:
-   #     form = ResultadoPartidaForm(dono_atletica=dono_atletica)
- #   return render(request, 'registrar_partida.html', {'form': form, 'atletica': dono_atletica})
- # Seu views.py, substituindo o bloco registrar_partida
-# views.py
 
 # Adicione esta importação no topo:
 from django.views.generic.edit import CreateView
@@ -267,60 +246,47 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy # Para usar a URL de redirecionamento no sucesso
 
 # ... (outras views)
-
-class RegistrarPartidaView(LoginRequiredMixin, CreateView):
-    # Modelo a ser usado
-    model = ResultadoPartida
+@login_required 
+def adicionar_resultado(request, pk):
+    # 1. AUTORIZAÇÃO: Verifica se o usuário logado é o dono da atlética (pk)
+    dono_atletica = get_object_or_404(Atletica, pk=pk)
     
-    # Formulário customizado
-    form_class = ResultadoPartidaForm 
+    # Restrição de acesso: Apenas o dono pode adicionar resultados para esta atlética
+    if request.user != dono_atletica.dono:
+        return HttpResponseForbidden("Você não tem permissão para adicionar resultados para esta atlética.")
     
-    # Template para renderizar o formulário
-    template_name = 'criar_resultado.html' 
+    # O objeto 'dono_atletica' será passado para o formulário para filtrar as opções
     
-    # URL de redirecionamento após sucesso (usaremos o método get_success_url)
-    success_url = reverse_lazy('index') 
-
-    # Sobrescreve para injetar a atlética do dono no formulário (para filtros)
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        pk = self.kwargs.get('pk')
-        dono_atletica = get_object_or_404(Atletica, pk=pk)
-        kwargs['dono_atletica'] = dono_atletica
-        kwargs['atletica'] = dono_atletica # Passa a atlética para o contexto do template
-        return kwargs
-    
-    # Sobrescreve para passar a atlética para o contexto de renderização
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pk = self.kwargs.get('pk')
-        context['atletica'] = get_object_or_404(Atletica, pk=pk)
-        return context
-
-    # 🚨 LÓGICA DE AUTOMAÇÃO E SEGURANÇA (POST)
-    def form_valid(self, form):
-        pk = self.kwargs.get('pk')
-        dono_atletica = get_object_or_404(Atletica, pk=pk)
-
-        # 1. AUTORIZAÇÃO: Verifica se o usuário logado é o dono
-        if self.request.user != dono_atletica.dono:
-            # Não é a maneira mais limpa de bloquear, mas garante segurança
-            return HttpResponseForbidden("Você não tem permissão para registrar resultados para esta atlética.")
-
-        # 2. ATRIBUIÇÃO AUTOMÁTICA
-        resultado = form.save(commit=False)
-        resultado.registrado_por = self.request.user
-        resultado.atletica_1 = dono_atletica
+    if request.method == 'POST':
+        # 2. PROCESSAMENTO POST: Recebe dados do formulário
+        form = ResultadoPartidaForm(request.POST, dono_atletica=dono_atletica) 
         
-        # 3. VALIDAÇÃO EXTRA (se a lógica de forms não pegar)
-        if resultado.atletica_1.pk == resultado.atletica_2.pk:
-             form.add_error(None, "Atlética Adversária não pode ser a própria atlética.")
-             return self.form_invalid(form) # Retorna erro
-        
-        resultado.save()
-        return super().form_valid(form)
+        if form.is_valid():
+            # Cria a instância do modelo, mas não salva no banco ainda (commit=False)
+            resultado = form.save(commit=False) 
+            
+            # 3. ATRIBUIÇÃO AUTOMÁTICA E IMUTÁVEL (os dados mais sensíveis)
+            
+            # a) Registrado por: Preenche com o ID do usuário logado
+            resultado.registrado_por = request.user
+            
+            # b) Atlética 1: Preenche com a atlética do dono (que não estava visível no form)
+            resultado.atletica_1 = dono_atletica 
+            
+            # Verifica se o resultado é válido (se Atletica 1 não é igual a Atletica 2 e Atletica Vencedora é uma das duas)
+            # O clean do form ou as constraints do model devem lidar com isso, mas é uma boa prática garantir:
+            if resultado.atletica_1.pk == resultado.atletica_2.pk:
+                form.add_error(None, "Atlética Adversária não pode ser a própria atlética.")
+                return render(request, 'criar_resultado.html', {'form': form, 'atletica': dono_atletica})
+            
+            resultado.save() # Salva a instância completa no banco
+            
+            # 4. REDIRECIONAMENTO: Volta para o perfil da atlética
+            return redirect('perfil_atletica', pk=dono_atletica.pk)
+            
+    else:
+        # 5. CARREGAMENTO GET: Cria um formulário vazio
+        form = ResultadoPartidaForm(dono_atletica=dono_atletica)
 
-    # 4. Define o redirecionamento para o perfil da atlética recém-editada
-    def get_success_url(self):
-        pk = self.kwargs.get('pk')
-        return reverse('perfil_atletica', kwargs={'pk': pk})
+    # Renderiza o template de criação
+    return render(request, 'criar_resultado.html', {'form': form, 'atletica': dono_atletica})
