@@ -243,15 +243,10 @@ def criar_atletica(request):
     return render(request, "criar_atletica.html", {"form": form})
 
 
-from django.views.generic.edit import CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin 
-from django.urls import reverse_lazy # Para usar a URL de redirecionamento no sucesso
 
 
-# views.py (Dentro da sua função)
 
 @login_required
-
 def adicionar_resultado(request, pk):
 
     atletica = get_object_or_404(Atletica, pk=pk)
@@ -267,29 +262,25 @@ def adicionar_resultado(request, pk):
 
             resultado.atletica_1 = atletica
             resultado.registrado_por = request.user
-                        
-            # Alias para facilitar a leitura
             atletica_dono = resultado.atletica_1
             atletica_adversaria = resultado.atletica_2
             atletica_vencedora = resultado.atletica_vencedora
 
-                        # --- VALIDAÇÃO 1: A VENCEDORA DEVE TER PARTICIPADO ---
-                        # O pk da vencedora deve ser igual ao pk da atlética do dono OU da adversária
             participantes_pk = {atletica_dono.pk, atletica_adversaria.pk}
             if atletica_vencedora.pk not in participantes_pk:
                 form.add_error('atletica_vencedora', "A atlética vencedora precisa ter participado da partida.")
-                            # Se houver erro, renderiza a página com o formulário e o erro
+                           
                 return render(request, 'adicionar_resultado.html', {'form': form, 'atletica': atletica})
 
-                        # --- VALIDAÇÃO 2: RESULTADO REPETIDO (Chave Única) ---
-            if not form.errors: # Só executa esta validação se a primeira não falhou
+                        #RESULTADO REPETIDO 
+            if not form.errors: #só executa esta validação se a primeira não falhou
                 
                 filtro_participantes_duplicidade = (
                     Q(atletica_1=atletica_dono, atletica_2=atletica_adversaria) | 
                     Q(atletica_1=atletica_adversaria, atletica_2=atletica_dono)
                 )
 
-                # Combina todos os filtros (para evitar o SyntaxError anterior)
+               
                 filtro_completo = (
                     filtro_participantes_duplicidade &
                     Q(data_partida=resultado.data_partida) &
@@ -302,13 +293,12 @@ def adicionar_resultado(request, pk):
                     usuario_anterior = confronto_existente.registrado_por.username
                     form.add_error(None, f"O resultado desta partida já foi incluído anteriormente por {usuario_anterior}.")
             
-            
-            # 🚨 CORREÇÃO PRINCIPAL: Salva SOMENTE se não houver erros adicionados
+            #só salva o resultado se nenhum erro foi adicionado
             if not form.errors: 
                 resultado.save()
                 return redirect('perfil_atletica', pk=pk)
     else:
-                # 1. Instancia o form, passando a atletica para que o forms.py filtre a atlética 2
+               
         form = ResultadoPartidaForm(dono_atletica=atletica)
 
 

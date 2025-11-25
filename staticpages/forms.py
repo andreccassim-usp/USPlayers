@@ -88,15 +88,13 @@ class ResultadoPartidaForm(forms.ModelForm):
              self.fields['atletica_2'].queryset = Atletica.objects.exclude(pk=dono_atletica.pk)
              self.fields['atletica_vencedora'].queryset = Atletica.objects.all()
     def clean_data_partida(self):
-        # 1. Obtém o valor do campo data_partida
         data = self.cleaned_data.get('data_partida')
-        
-        # 2. Obtém a data atual (sem componente de tempo)
+
         hoje = date.today() 
         
-        # 3. Validação: Checa se a data fornecida é futura
+        #checa se a data fornecida é futura
         if data and data > hoje:
-            # Levanta uma exceção de validação que anexa o erro ao campo
             raise forms.ValidationError("Data da partida inválida: não é possível registrar resultados para o futuro.")
             
         return data
+    
