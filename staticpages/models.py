@@ -52,42 +52,21 @@ class Atleta(models.Model):
 
 
 class ResultadoPartida(models.Model):
-    atletica_1 = models.ForeignKey(
-        Atletica,
-        on_delete=models.CASCADE,
-        related_name="partidas_como_1",
-        verbose_name="Atlética 1",
-    )
-    atletica_2 = models.ForeignKey(
-        Atletica,
-        on_delete=models.CASCADE,
-        related_name="partidas_como_2",
-        verbose_name="Atlética 2",
-    )
-    atletica_vencedora = models.ForeignKey(
-        Atletica,
-        on_delete=models.CASCADE,
-        related_name="vitorias",
-        verbose_name="Atlética Vencedora",
-    )
-
-    data_partida = models.DateField(default=timezone.now)
+    atletica_1 = models.ForeignKey(Atletica, on_delete=models.CASCADE, related_name='resultado_mandante')
+    atletica_2 = models.ForeignKey(Atletica, on_delete=models.CASCADE, related_name='resultado_visitante')
+    
+    data_partida = models.DateField()
     modalidade = models.CharField(max_length=100)
 
-    registrado_por = models.ForeignKey(
-        User,
+    atletica_vencedora = models.ForeignKey(
+        Atletica,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
+        related_name='vitorias'
     )
 
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                name="atleticas_diferentes",
-                check=~models.Q(atletica_1=models.F("atletica_2")),
-            )
-        ]
+    registrado_por = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return (

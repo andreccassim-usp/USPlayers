@@ -1,20 +1,22 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseForbidden
 from .models import Atleta, Atletica, ResultadoPartida
-from .forms import AtletaForm, AtleticaForm, SignupForm
+from .forms import AtletaForm, AtleticaForm, SignupForm, ResultadoPartidaForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy # Para usar a URL de redirecionamento no sucesso
 from django.contrib.auth import login
 from django.db.models import Q 
 from datetime import timedelta
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
 from django.core import serializers
 from django.contrib.auth.models import Group
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin 
+
 
 # --------- PERFIS (qualquer um pode ver) ----------
 def index(request):
@@ -137,6 +139,7 @@ def signup(request):
         form = SignupForm()
 
     return render(request, 'signup.html', {'form': form})
+
 def comparacao(request):
 
     MODALIDADES = [
@@ -238,3 +241,69 @@ def criar_atletica(request):
         form = AtleticaForm()
 
     return render(request, "criar_atletica.html", {"form": form})
+
+
+
+
+
+@login_required
+def adicionar_resultado(request, pk):
+
+    atletica = get_object_or_404(Atletica, pk=pk)
+
+    if request.user != atletica.dono:
+        return HttpResponseForbidden("Você não pode adicionar resultados.")
+
+    if request.method == 'POST':
+       form = ResultadoPartidaForm(request.POST)
+
+       if form.is_valid():
+            resultado = form.save(commit=False)
+
+            resultado.atletica_1 = atletica
+            resultado.registrado_por = request.user
+            atletica_dono = resultado.atletica_1
+            atletica_adversaria = resultado.atletica_2
+            atletica_vencedora = resultado.atletica_vencedora
+
+            participantes_pk = {atletica_dono.pk, atletica_adversaria.pk}
+            if atletica_vencedora.pk not in participantes_pk:
+                form.add_error('atletica_vencedora', "A atlética vencedora precisa ter participado da partida.")
+                           
+                return render(request, 'adicionar_resultado.html', {'form': form, 'atletica': atletica})
+
+                        #RESULTADO REPETIDO 
+            if not form.errors: #só executa esta validação se a primeira não falhou
+                
+                filtro_participantes_duplicidade = (
+                    Q(atletica_1=atletica_dono, atletica_2=atletica_adversaria) | 
+                    Q(atletica_1=atletica_adversaria, atletica_2=atletica_dono)
+                )
+
+               
+                filtro_completo = (
+                    filtro_participantes_duplicidade &
+                    Q(data_partida=resultado.data_partida) &
+                    Q(modalidade=resultado.modalidade)
+                )
+                
+                confronto_existente = ResultadoPartida.objects.filter(filtro_completo).first()
+
+                if confronto_existente:
+                    usuario_anterior = confronto_existente.registrado_por.username
+                    form.add_error(None, f"O resultado desta partida já foi incluído anteriormente por {usuario_anterior}.")
+            
+            #só salva o resultado se nenhum erro foi adicionado
+            if not form.errors: 
+                resultado.save()
+                return redirect('perfil_atletica', pk=pk)
+    else:
+               
+        form = ResultadoPartidaForm(dono_atletica=atletica)
+
+
+
+    return render(request, 'adicionar_resultado.html', {
+        'form': form,
+        'atletica': atletica
+    })
