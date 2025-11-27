@@ -41,5 +41,6 @@ urlpatterns = [
     path("buscar_api/", views.buscar_api, name="buscar_api"),
     path('criar-atleta/', views.criar_atleta, name='criar_atleta'),
     path('criar-atletica/', views.criar_atletica, name='criar_atletica'),
+     path('atletica/<int:pk>/adicionar-resultado/', views.adicionar_resultado, name='adicionar_resultado'),
 ]
 

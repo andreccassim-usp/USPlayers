@@ -55,12 +55,12 @@
                 <h3>Resultados nos Últimos Dois Anos</h3>
                 <p>
                     A <strong>{{ resultado_comparacao.vencedora }}</strong> venceu 
-                    **{{ resultado_comparacao.vitorias_vencedora }}** confrontos, 
+                    {{ resultado_comparacao.vitorias_vencedora }} confrontos, 
                     enquanto a <strong>{{ resultado_comparacao.perdedora }}</strong> venceu 
-                    **{{ resultado_comparacao.vitorias_perdedora }}** confrontos.
+                    {{ resultado_comparacao.vitorias_perdedora }} confrontos.
                 </p>
                 <h4>
-                    Portanto, a **{{ resultado_comparacao.vencedora }}** tem **Maior Probabilidade de Vitória**!
+                    Portanto, a {{ resultado_comparacao.vencedora }} tem maior probabilidade de vitória!
                 </h4>
             {% elif mensagem_erro %}
                 <hr>

@@ -12,4 +12,5 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('criar-atleta/', views.criar_atleta, name='criar_atleta'),
     path('criar-atletica/', views.criar_atletica, name='criar_atletica'),
+    path('atletica/<int:pk>/adicionar_resultado/', views.adicionar_resultado, name='adicionar_resultado'),
 ]
